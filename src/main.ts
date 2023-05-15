@@ -291,9 +291,7 @@ const avatar = new Avatar(
 );
 
 function detectFaceLandmarks(time: DOMHighResTimeStamp): void {
-  if (!faceLandmarker) {
-    return;
-  }
+  if (!faceLandmarker) return;
 
   const landmarks = faceLandmarker.detectForVideo(video, time);
 
@@ -378,11 +376,13 @@ async function runDemo() {
   console.log("running demo");
   await streamWebcamThroughFaceLandmarker();
 
-  const vision = await FilesetResolver.forVisionTasks("/tasks-vision-wasm");
+  const vision = await FilesetResolver.forVisionTasks(
+    new URL("/tasks-vision-wasm", import.meta.url).toString()
+  ); // originally was: "https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@0.1.0-alpha-16/wasm"
 
   faceLandmarker = await FaceLandmarker.createFromModelPath(
     vision,
-    "/face_landmarker.task" // https://storage.googleapis.com/mediapipe-models/face_landmarker/face_landmarker/float16/latest/face_landmarker.task
+    new URL("/face_landmarker.task", import.meta.url).toString() // https://storage.googleapis.com/mediapipe-models/face_landmarker/face_landmarker/float16/latest/face_landmarker.task
   );
 
   await faceLandmarker.setOptions({
