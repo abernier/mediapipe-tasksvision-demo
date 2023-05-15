@@ -1,23 +1,15 @@
 import * as THREE from "three";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
-import {
-  GLTFLoader,
-  GLTF
-} from "three/examples/jsm/loaders/GLTFLoader";
-// import {
-//   FilesetResolver,
-//   FaceLandmarker,
-//   Classifications
-// } from "https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@0.1.0-alpha-16";
+import { GLTFLoader, GLTF } from "three/examples/jsm/loaders/GLTFLoader";
 import {
   FilesetResolver,
   FaceLandmarker,
-  Classifications
+  Classifications,
 } from "@mediapipe/tasks-vision";
 import Stats from "three/examples/jsm/libs/stats.module";
 import GUI from "lil-gui";
 
-import './style.css'
+import "./style.css";
 
 const stats: any = new Stats();
 document.body.appendChild(stats.dom);
@@ -106,8 +98,8 @@ class BasicScene {
     this.controls.update();
 
     // Add a video background
-    const video = document.createElement('video');
-    this.video = video
+    const video = document.createElement("video");
+    this.video = video;
     const inputFrameTexture = new THREE.VideoTexture(video);
     if (!inputFrameTexture) {
       throw new Error("Failed to get the 'input_frame' texture!");
@@ -300,7 +292,6 @@ const avatar = new Avatar(
 );
 
 function detectFaceLandmarks(time: DOMHighResTimeStamp): void {
-
   if (!faceLandmarker) {
     return;
   }
@@ -361,16 +352,15 @@ async function streamWebcamThroughFaceLandmarker(): Promise<void> {
   video = scene.video;
 
   function onAcquiredUserMedia(stream: MediaStream): void {
-    console.log('onAcquiredUserMedia', video)
+    console.log("onAcquiredUserMedia", video);
 
     function onloadedmetadata() {
-      console.log('play')
+      console.log("play");
       video.play();
     }
-    setTimeout(onloadedmetadata, 1000)
+    setTimeout(onloadedmetadata, 1000);
     // video.onloadedmetadata = onloadedmetadata;
     video.srcObject = stream;
-
   }
 
   try {
@@ -379,11 +369,11 @@ async function streamWebcamThroughFaceLandmarker(): Promise<void> {
       video: {
         facingMode: "user",
         width: 1280,
-        height: 720
-      }
+        height: 720,
+      },
     });
     onAcquiredUserMedia(evt);
-    console.log('bip', evt)
+    console.log("bip", evt);
     video.requestVideoFrameCallback(onVideoFrame);
   } catch (e: unknown) {
     console.error(`Failed to acquire camera feed: ${e}`);
@@ -391,12 +381,10 @@ async function streamWebcamThroughFaceLandmarker(): Promise<void> {
 }
 
 async function runDemo() {
-  console.log('running demo')
+  console.log("running demo");
   await streamWebcamThroughFaceLandmarker();
 
-  const vision = await FilesetResolver.forVisionTasks(
-    "https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@0.1.0-alpha-16/wasm"
-  );
+  const vision = await FilesetResolver.forVisionTasks("/tasks-vision-wasm");
 
   faceLandmarker = await FaceLandmarker.createFromModelPath(
     vision,
@@ -405,11 +393,11 @@ async function runDemo() {
 
   await faceLandmarker.setOptions({
     baseOptions: {
-      delegate: "GPU"
+      delegate: "GPU",
     },
     runningMode: "VIDEO",
     outputFaceBlendshapes: true,
-    outputFacialTransformationMatrixes: true
+    outputFacialTransformationMatrixes: true,
   });
 
   console.log("Finished Loading MediaPipe Model.");
