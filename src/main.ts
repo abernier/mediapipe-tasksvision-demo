@@ -252,9 +252,8 @@ class Avatar {
     matrixRetargetOptions?: MatrixRetargetOptions
   ): void {
     const { decompose = false, scale = 1 } = matrixRetargetOptions || {};
-    if (!this.gltf) {
-      return;
-    }
+    if (!this.gltf) return;
+
     // Three.js will update the object matrix when it render the page
     // according the object position, scale, rotation.
     // To manually set the object matrix, you have to set autoupdate to false.
@@ -352,19 +351,15 @@ async function streamWebcamThroughFaceLandmarker(): Promise<void> {
   video = scene.video;
 
   function onAcquiredUserMedia(stream: MediaStream): void {
-    console.log("onAcquiredUserMedia", video);
-
     function onloadedmetadata() {
-      console.log("play");
       video.play();
     }
-    setTimeout(onloadedmetadata, 1000);
-    // video.onloadedmetadata = onloadedmetadata;
+    video.onloadedmetadata = onloadedmetadata;
     video.srcObject = stream;
   }
 
   try {
-    const evt = await navigator.mediaDevices.getUserMedia({
+    const mediaStream = await navigator.mediaDevices.getUserMedia({
       audio: false,
       video: {
         facingMode: "user",
@@ -372,8 +367,7 @@ async function streamWebcamThroughFaceLandmarker(): Promise<void> {
         height: 720,
       },
     });
-    onAcquiredUserMedia(evt);
-    console.log("bip", evt);
+    onAcquiredUserMedia(mediaStream);
     video.requestVideoFrameCallback(onVideoFrame);
   } catch (e: unknown) {
     console.error(`Failed to acquire camera feed: ${e}`);
@@ -388,7 +382,7 @@ async function runDemo() {
 
   faceLandmarker = await FaceLandmarker.createFromModelPath(
     vision,
-    "https://storage.googleapis.com/mediapipe-models/face_landmarker/face_landmarker/float16/latest/face_landmarker.task"
+    "/face_landmarker.task" // https://storage.googleapis.com/mediapipe-models/face_landmarker/face_landmarker/float16/latest/face_landmarker.task
   );
 
   await faceLandmarker.setOptions({
